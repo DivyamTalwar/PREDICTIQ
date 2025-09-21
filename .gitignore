@@ -1,0 +1,186 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+venv.bak/
+env.bak/
+.conda/
+myenv/
+*.virtualenv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+.claude/
+
+# Environment variables
+.env
+.env.*
+*.env
+!.env.example
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+instance/
+*.db-journal
+
+# Logs
+logs/
+*.log
+*.log.*
+log/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+nosetests.xml
+coverage.xml
+*.cover
+.cache
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Machine Learning / Data Science
+*.h5
+*.pkl
+*.pickle
+*.model
+*.joblib
+*.npy
+*.npz
+models/
+data/
+datasets/
+vectorstore/
+uploads/
+temp/
+tmp/
+*.csv
+!requirements.txt
+!setup.py
+
+# Package files
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Secrets and certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Node (if using any JS/TS)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Documentation builds
+docs/_build/
+site/
+_build/
+
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+*.orig
+*.swp.bak
+
+# Cache directories
+.cache/
+*.cache
+.streamlit/
+.huggingface/
+.matplotlib/
+.keras/
+
+# Output/Results
+output/
+outputs/
+results/
+reports/
+
+# Local configuration
+config.local.py
+settings.local.py
+
+# Media files (uncomment if needed)
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.pdf
+# *.mp4
+# *.mp3
+# *.wav
+
+# Specific project excludes
+*.parquet
+*.feather
+*.msgpack
