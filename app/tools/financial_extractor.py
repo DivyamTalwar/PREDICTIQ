@@ -142,6 +142,25 @@ class FinancialDataExtractorTool:
                 financial_data.setdefault('revenue', 0.0)
                 financial_data.setdefault('net_profit', 0.0)
 
+                # Post-process to fix common LLM extraction issues
+                # If revenue or profit seems too small (< 1000), it might be wrongly divided
+                if financial_data.get('revenue', 0) > 0 and financial_data['revenue'] < 1000:
+                    # Check if it looks like it was divided by 100 (e.g., 626.13 instead of 62613)
+                    if '.' in str(financial_data['revenue']):
+                        potential_value = financial_data['revenue'] * 100
+                        # Verify this makes sense for TCS (typically in tens of thousands of crores)
+                        if 10000 < potential_value < 100000:
+                            logger.info(f"Correcting revenue from {financial_data['revenue']} to {potential_value}")
+                            financial_data['revenue'] = potential_value
+
+                if financial_data.get('net_profit', 0) > 0 and financial_data['net_profit'] < 1000:
+                    if '.' in str(financial_data['net_profit']):
+                        potential_value = financial_data['net_profit'] * 100
+                        # Verify this makes sense for TCS (typically in thousands of crores)
+                        if 1000 < potential_value < 30000:
+                            logger.info(f"Correcting net_profit from {financial_data['net_profit']} to {potential_value}")
+                            financial_data['net_profit'] = potential_value
+
                 # Validate and create FinancialMetrics object
                 metrics = FinancialMetrics(**financial_data)
                 metrics.extraction_confidence = 0.9  # High confidence for LLM extraction
@@ -191,13 +210,14 @@ REQUIRED JSON SCHEMA:
 }}
 
 EXTRACTION GUIDELINES:
-1. Convert all amounts to crores (₹ crores)
-2. Extract percentages as numbers (e.g., 15.5 for 15.5%)
-3. Focus on the most recent quarter data
-4. Include all major business segments mentioned
-5. If exact numbers aren't available, use null
-6. Be precise with revenue and profit figures
-7. Calculate margins if not explicitly stated
+1. IMPORTANT: When you see "62,613 crores", extract as 62613.0 (remove commas, keep full number)
+2. For example: "INR 62,613 crores" should be extracted as revenue: 62613.0
+3. Extract percentages as numbers (e.g., 15.5 for 15.5%)
+4. Focus on the most recent quarter data
+5. Include all major business segments mentioned
+6. If exact numbers aren't available, use null
+7. Be precise with revenue and profit figures - DO NOT divide by 100 or 1000
+8. Calculate margins if not explicitly stated
 
 RETURN ONLY VALID JSON:
 """
@@ -254,9 +274,12 @@ RETURN ONLY VALID JSON:
         """Extract revenue using pattern matching"""
 
         revenue_patterns = [
-            r'total\s+(?:income|revenue).*?(?:₹|rs)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
-            r'revenue.*?(?:₹|rs)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
-            r'net\s+sales.*?(?:₹|rs)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr'
+            r'total\s+(?:income|revenue).*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'revenue.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'net\s+sales.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            # Additional patterns for common formats
+            r'Revenue\s+was\s+(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*crore',
+            r'Total\s+Revenue.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*crore'
         ]
 
         for pattern in revenue_patterns:
@@ -274,9 +297,12 @@ RETURN ONLY VALID JSON:
 
         # Net profit patterns
         net_profit_patterns = [
-            r'net\s+profit.*?(?:₹|rs)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
-            r'profit\s+after\s+tax.*?(?:₹|rs)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
-            r'pat.*?(?:₹|rs)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr'
+            r'net\s+profit.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'profit\s+after\s+tax.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'pat.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            # Additional patterns for common formats
+            r'Net\s+profit\s+(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*crore',
+            r'Net\s+Income.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*crore'
         ]
 
         for pattern in net_profit_patterns:
@@ -287,8 +313,9 @@ RETURN ONLY VALID JSON:
 
         # Operating profit patterns
         op_profit_patterns = [
-            r'operating\s+profit.*?₹\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
-            r'ebit.*?₹\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr'
+            r'operating\s+profit.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'ebit.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'Operating\s+Income.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*crore'
         ]
 
         for pattern in op_profit_patterns:
@@ -299,7 +326,8 @@ RETURN ONLY VALID JSON:
 
         # EBITDA patterns
         ebitda_patterns = [
-            r'ebitda.*?₹\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr'
+            r'ebitda.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*cr',
+            r'EBITDA.*?(?:₹|rs|INR)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*crore'
         ]
 
         for pattern in ebitda_patterns:
@@ -401,8 +429,8 @@ RETURN ONLY VALID JSON:
         for segment_name in segment_names:
             # Look for segment revenue patterns
             segment_patterns = [
-                f'{re.escape(segment_name)}.*?₹\\s*(\\d+(?:,\\d+)*(?:\\.\\d+)?)\\s*cr',
-                f'({re.escape(segment_name)}).*?revenue.*?₹\\s*(\\d+(?:,\\d+)*(?:\\.\\d+)?)\\s*cr'
+                f'{re.escape(segment_name)}.*?(?:₹|rs|INR)\\s*(\\d+(?:,\\d+)*(?:\\.\\d+)?)\\s*cr',
+                f'({re.escape(segment_name)}).*?revenue.*?(?:₹|rs|INR)\\s*(\\d+(?:,\\d+)*(?:\\.\\d+)?)\\s*cr'
             ]
 
             for pattern in segment_patterns:
