@@ -1,10 +1,3 @@
-# File: app/rag/embeddings.py
-# Purpose: OpenAI embeddings pipeline for TCS financial documents
-# Dependencies: openai, tiktoken, numpy, logging
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 3
-
 import logging
 import time
 import hashlib

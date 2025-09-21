@@ -1,10 +1,3 @@
-# File: app/rag/indexer.py
-# Purpose: Vector indexing system for processing and indexing financial documents
-# Dependencies: pathlib, json, logging, typing
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 3
-
 import logging
 import json
 from typing import List, Dict, Any, Optional, Tuple

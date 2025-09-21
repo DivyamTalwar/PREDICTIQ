@@ -1,10 +1,3 @@
-# File: app/rag/retriever.py
-# Purpose: Document retrieval system with query enhancement and reranking
-# Dependencies: openai, re, typing, logging
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 3
-
 import logging
 import re
 from typing import List, Dict, Any, Optional, Tuple, Set

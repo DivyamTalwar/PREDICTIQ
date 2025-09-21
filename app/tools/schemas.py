@@ -1,31 +1,21 @@
-# File: app/tools/schemas.py
-# Purpose: Pydantic schemas for financial analysis tools
-# Dependencies: pydantic, typing, datetime
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 4
-
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 from enum import Enum
 
 class QuarterType(str, Enum):
-    """Enumeration for quarter types"""
     Q1 = "Q1"
     Q2 = "Q2"
     Q3 = "Q3"
     Q4 = "Q4"
-    FY = "FY"  # Full Year
+    FY = "FY" 
 
 class CurrencyType(str, Enum):
-    """Supported currency types"""
     INR = "INR"
     USD = "USD"
     EUR = "EUR"
 
 class SegmentPerformance(BaseModel):
-    """Schema for business segment performance data"""
     segment_name: str = Field(..., description="Name of the business segment")
     revenue: float = Field(..., description="Segment revenue in millions")
     revenue_growth_yoy: Optional[float] = Field(None, description="Year-over-year revenue growth percentage")

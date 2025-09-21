@@ -1,10 +1,3 @@
-# File: app/rag/vectorstore.py
-# Purpose: Pinecone vector store setup and management for TCS financial documents
-# Dependencies: pinecone-client, logging, typing
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 3
-
 import logging
 import time
 from typing import List, Dict, Any, Optional, Tuple

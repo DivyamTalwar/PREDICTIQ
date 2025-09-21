@@ -1,10 +1,3 @@
-# File: app/middleware/rate_limiting.py
-# Purpose: Rate limiting middleware for API protection
-# Dependencies: fastapi, time, collections
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 5
-
 import time
 import logging
 from collections import defaultdict, deque
@@ -17,13 +10,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 logger = logging.getLogger(__name__)
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """
-    Rate limiting middleware using sliding window algorithm
-
-    Implements per-IP rate limiting to prevent abuse and ensure
-    fair usage of the API resources.
-    """
-
     def __init__(self, app, calls_per_minute: int = 60, burst_allowance: int = 50):
         super().__init__(app)
         self.calls_per_minute = calls_per_minute

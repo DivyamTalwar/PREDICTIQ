@@ -1,10 +1,3 @@
-# File: app/api/analysis.py
-# Purpose: Financial analysis API endpoints
-# Dependencies: fastapi, pydantic, typing
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 5
-
 import asyncio
 import logging
 from typing import List, Optional, Dict, Any
@@ -115,46 +108,34 @@ async def comprehensive_financial_analysis(
         # Prepare document chunks
         document_chunks = [request.document_text]
 
-        # Run financial and qualitative analysis in parallel
+        # Run REAL financial and qualitative analysis in parallel using OpenAI
         logger.info(f"Running parallel analysis for {request.quarter} FY{request.fiscal_year}")
 
-        # Mock implementation for now
-        from app.tools.schemas import FinancialMetrics, QualitativeInsights, SentimentAnalysis, ManagementInsights
+        # Run both analyses concurrently for faster processing
+        import asyncio
 
-        financial_metrics = FinancialMetrics(
-            revenue=64988.5,
-            net_profit=11342.0,
-            operating_margin=24.5,
-            net_margin=17.5,
-            eps=30.25,
-            revenue_growth_yoy=8.5,
-            profit_growth_yoy=7.2,
+        financial_task = financial_extractor.extract_financial_metrics(
+            document_chunks=document_chunks,
             quarter=request.quarter,
-            fiscal_year=request.fiscal_year,
-            extraction_confidence=0.95
+            fiscal_year=request.fiscal_year
         )
 
-        qualitative_insights = QualitativeInsights(
-            sentiment_analysis=SentimentAnalysis(
-                overall_sentiment=0.75,
-                confidence=0.85,
-                positive_keywords=["growth", "innovation", "digital"],
-                negative_keywords=["challenges", "competition"]
-            ),
-            management_insights=ManagementInsights(
-                management_confidence="High",
-                forward_guidance="Positive",
-                key_statements=["Strong growth momentum", "Digital transformation progressing well"]
-            ),
-            growth_drivers=["AI services", "Cloud adoption", "Digital transformation"],
-            risk_factors=["Currency fluctuation", "Talent retention"],
-            strategic_initiatives=["AI-first approach", "Cloud migration"],
-            market_opportunities=["GenAI adoption", "Enterprise modernization"],
-            analysis_confidence=0.88,
+        qualitative_task = qualitative_analyzer.analyze_qualitative_content(
+            document_chunks=document_chunks,
             quarter=request.quarter,
-            fiscal_year=request.fiscal_year,
-            document_type="quarterly_report"
+            fiscal_year=request.fiscal_year
         )
+
+        # Execute both in parallel
+        financial_metrics, qualitative_insights = await asyncio.gather(
+            financial_task,
+            qualitative_task
+        )
+
+        # Ensure all required fields are present
+        qualitative_insights.quarter = request.quarter
+        qualitative_insights.fiscal_year = request.fiscal_year
+        qualitative_insights.document_type = "quarterly_report"
 
         # Generate combined analysis summary
         analysis_summary = {
@@ -235,19 +216,11 @@ async def financial_only_analysis(
     try:
         document_chunks = [request.document_text]
 
-        # Mock implementation to avoid timeout
-        from app.tools.schemas import FinancialMetrics
-        financial_metrics = FinancialMetrics(
-            revenue=64988.5,
-            net_profit=11342.0,
-            operating_margin=24.5,
-            net_margin=17.5,
-            eps=30.25,
-            revenue_growth_yoy=8.5,
-            profit_growth_yoy=7.2,
+        # Use REAL financial extraction with OpenAI
+        financial_metrics = await financial_extractor.extract_financial_metrics(
+            document_chunks=document_chunks,
             quarter=request.quarter,
-            fiscal_year=request.fiscal_year,
-            extraction_confidence=0.95
+            fiscal_year=request.fiscal_year
         )
 
         processing_time = (datetime.now() - start_time).total_seconds()
@@ -256,7 +229,7 @@ async def financial_only_analysis(
             "request_id": request_id,
             "status": "completed",
             "financial_metrics": financial_metrics,
-            "extraction_summary": {"status": "mocked", "metrics_extracted": True},
+            "extraction_summary": {"status": "completed", "metrics_extracted": True},
             "processing_time_seconds": processing_time,
             "timestamp": datetime.now().isoformat()
         }
@@ -285,29 +258,16 @@ async def qualitative_only_analysis(
     try:
         document_chunks = [request.document_text]
 
-        # Mock implementation to avoid timeout
-        from app.tools.schemas import QualitativeInsights, SentimentAnalysis, ManagementInsights
-        qualitative_insights = QualitativeInsights(
-            sentiment_analysis=SentimentAnalysis(
-                overall_sentiment=0.75,
-                confidence=0.85,
-                positive_keywords=["growth", "innovation"],
-                negative_keywords=["challenges"]
-            ),
-            management_insights=ManagementInsights(
-                management_confidence="High",
-                forward_guidance="Positive",
-                key_statements=["Strong growth momentum"]
-            ),
-            growth_drivers=["AI services", "Cloud adoption"],
-            risk_factors=["Currency fluctuation"],
-            strategic_initiatives=["AI-first approach"],
-            market_opportunities=["GenAI adoption"],
-            analysis_confidence=0.88,
+        # Use REAL qualitative analysis with OpenAI
+        qualitative_insights = await qualitative_analyzer.analyze_qualitative_content(
+            document_chunks=document_chunks,
             quarter=request.quarter,
-            fiscal_year=request.fiscal_year,
-            document_type="quarterly_report"
+            fiscal_year=request.fiscal_year
         )
+
+        # Ensure we have all required fields
+        if not hasattr(qualitative_insights, 'analysis_confidence'):
+            qualitative_insights.analysis_confidence = 0.88
 
         processing_time = (datetime.now() - start_time).total_seconds()
 
@@ -315,7 +275,7 @@ async def qualitative_only_analysis(
             "request_id": request_id,
             "status": "completed",
             "qualitative_insights": qualitative_insights,
-            "analysis_summary": {"status": "mocked", "analysis_complete": True},
+            "analysis_summary": {"status": "completed", "analysis_complete": True},
             "processing_time_seconds": processing_time,
             "timestamp": datetime.now().isoformat()
         }
@@ -342,15 +302,15 @@ async def quick_sentiment_analysis(
     request_id = str(uuid.uuid4())
 
     try:
-        # Mock implementation to avoid timeout
-        from app.tools.schemas import SentimentAnalysis
-        sentiment_analysis = SentimentAnalysis(
-            overall_sentiment=0.75,
-            confidence=0.85,
-            positive_keywords=["growth", "momentum", "transformation"],
-            negative_keywords=[]
-        )
-        top_themes = ["growth", "digital transformation", "strong margins"]
+        # Use REAL qualitative analysis with OpenAI
+        document_chunks = [request.text]
+
+        # Quick sentiment analysis using real AI
+        sentiment_analysis = await qualitative_analyzer._analyze_sentiment(request.text)
+
+        # Extract themes using pattern matching for speed
+        themes = qualitative_analyzer._extract_themes_patterns(request.text)
+        top_themes = [theme.theme_name for theme in themes[:3]] if themes else []
 
         processing_time = (datetime.now() - start_time).total_seconds()
 

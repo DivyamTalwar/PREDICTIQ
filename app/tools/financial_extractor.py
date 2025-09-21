@@ -1,10 +1,3 @@
-# File: app/tools/financial_extractor.py
-# Purpose: LLM-powered financial data extraction tool for TCS reports
-# Dependencies: openai, pydantic, re, typing
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 4
-
 import logging
 import re
 from typing import List, Dict, Any, Optional, Tuple
@@ -20,13 +13,6 @@ from app.config.settings import Settings
 logger = logging.getLogger(__name__)
 
 class FinancialDataExtractorTool:
-    """
-    Advanced LLM-powered financial data extraction tool.
-
-    Combines pattern matching, NER, and LLM-based extraction for comprehensive
-    financial metrics extraction from TCS quarterly reports.
-    """
-
     def __init__(self, settings: Optional[Settings] = None):
         """Initialize the financial extractor tool"""
         self.settings = settings or Settings()

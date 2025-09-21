@@ -11,8 +11,7 @@ settings = get_settings()
 
 router = APIRouter(prefix="/intelligence", tags=["Advanced Intelligence"])
 
-# Placeholder for intelligence engines - will be implemented
-logger.info("🧠 Intelligence module loading...")
+logger.info("Intelligence module loading...")
 
 @router.post("/predictive-analysis")
 async def generate_predictive_analysis(

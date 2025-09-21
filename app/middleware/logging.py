@@ -1,10 +1,3 @@
-# File: app/middleware/logging.py
-# Purpose: Request/response logging middleware
-# Dependencies: fastapi, time, logging, uuid
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 5
-
 import time
 import logging
 import uuid
@@ -17,14 +10,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 logger = logging.getLogger(__name__)
 
 class LoggingMiddleware(BaseHTTPMiddleware):
-    """
-    Comprehensive request/response logging middleware
-
-    Logs all API requests and responses with timing,
-    request IDs, and relevant metadata for monitoring
-    and debugging purposes.
-    """
-
     def __init__(self, app):
         super().__init__(app)
 

@@ -1,10 +1,3 @@
-# File: app/db/crud.py
-# Purpose: CRUD operations for all database entities
-# Dependencies: sqlalchemy, typing, datetime
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 2
-
 import logging
 from typing import List, Optional, Dict, Any, Union
 from datetime import datetime, timedelta

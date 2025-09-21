@@ -1,10 +1,3 @@
-# File: app/parsers/screener_client.py
-# Purpose: Screener.in integration for downloading TCS quarterly reports and earnings transcripts
-# Dependencies: requests, beautifulsoup4, pathlib, logging
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 1
-
 import logging
 import time
 import hashlib
@@ -20,12 +13,6 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 class ScreenerClient:
-    """
-    Client for downloading financial documents from Screener.in.
-
-    Handles authentication, rate limiting, and document validation.
-    Implements caching to avoid re-downloads.
-    """
 
     def __init__(self):
         self.session = requests.Session()
@@ -35,11 +22,9 @@ class ScreenerClient:
         self.last_request_time = 0
         self.rate_limit_delay = 2.0  # seconds between requests
 
-        # Create directories
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-        # Setup session headers
         self._setup_session()
 
     def _setup_session(self) -> None:

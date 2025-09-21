@@ -1,10 +1,3 @@
-# File: app/parsers/url_processor.py
-# Purpose: URL content parser with Jina Reader API integration and fallback mechanisms
-# Dependencies: httpx, beautifulsoup4, selenium, requests
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 1
-
 import logging
 import asyncio
 import json
@@ -13,7 +6,7 @@ from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
 import re
-
+from typing import Tuple
 import httpx
 from bs4 import BeautifulSoup
 import requests
@@ -23,12 +16,6 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 class URLProcessor:
-    """
-    URL content processor with multiple parsing strategies.
-
-    Implements Jina Reader API as primary method with BeautifulSoup
-    and Selenium as fallback mechanisms for JavaScript-heavy content.
-    """
 
     def __init__(self):
         self.jina_base_url = "https://r.jina.ai/"

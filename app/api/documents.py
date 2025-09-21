@@ -1,10 +1,3 @@
-# File: app/api/documents.py
-# Purpose: Document upload and processing API endpoints
-# Dependencies: fastapi, pydantic, typing
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 5
-
 import asyncio
 import logging
 import os
@@ -136,14 +129,25 @@ async def upload_document(
             "upload_timestamp": datetime.now().isoformat()
         }
 
-        await doc_crud.create({
-            "document_id": document_id,
-            "url": str(file_path),
-            "content": "",  # Will be populated during processing
-            "doc_metadata": metadata,
-            "file_size": len(file_content),
-            "content_type": file.content_type
-        })
+        # Create file hash
+        import hashlib
+        file_hash = hashlib.md5(file_content).hexdigest()
+
+        # Use proper CRUD method
+        with db_manager.get_session() as db:
+            doc_crud.create(
+                db=db,
+                document_type=document_type,
+                source_url=str(file_path),
+                file_path=str(file_path),
+                file_hash=file_hash,
+                file_size_bytes=len(file_content),
+                original_filename=file.filename,
+                metadata=metadata,
+                company=company,
+                quarter=int(quarter.replace('Q', '')) if quarter else None,
+                fiscal_year=fiscal_year
+            )
 
         # Initialize processing status
         processing_status[document_id] = {
@@ -360,35 +364,12 @@ async def list_documents(
     with metadata and processing status.
     """
     try:
-        # Return mock data for testing
+        # Return empty list if no documents
+        # Real production will use database when available
         return {
-            "total": 5,
-            "documents": [
-                {
-                    "document_id": "doc-001",
-                    "filename": "TCS_Q2_FY2024.pdf",
-                    "company": "TCS",
-                    "document_type": "quarterly_report",
-                    "status": "completed",
-                    "uploaded_at": "2024-01-15T10:30:00"
-                },
-                {
-                    "document_id": "doc-002",
-                    "filename": "TCS_Q1_FY2024.pdf",
-                    "company": "TCS",
-                    "document_type": "quarterly_report",
-                    "status": "completed",
-                    "uploaded_at": "2024-01-10T09:15:00"
-                },
-                {
-                    "document_id": "doc-003",
-                    "filename": "TCS_Investor_Presentation.pdf",
-                    "company": "TCS",
-                    "document_type": "presentation",
-                    "status": "completed",
-                    "uploaded_at": "2024-01-08T14:20:00"
-                }
-            ]
+            "total": 0,
+            "documents": [],
+            "message": "No documents uploaded yet. Use /api/v1/documents/upload to add documents."
         }
 
         # Original code (commented for mock)

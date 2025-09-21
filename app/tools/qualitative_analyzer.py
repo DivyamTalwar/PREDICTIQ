@@ -1,10 +1,3 @@
-# File: app/tools/qualitative_analyzer.py
-# Purpose: LLM-powered qualitative analysis tool for TCS reports
-# Dependencies: openai, pydantic, re, typing, textblob
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 4
-
 import logging
 import re
 from typing import List, Dict, Any, Optional, Tuple
@@ -23,14 +16,6 @@ from app.config.settings import Settings
 logger = logging.getLogger(__name__)
 
 class QualitativeAnalysisTool:
-    """
-    Advanced LLM-powered qualitative analysis tool for TCS reports.
-
-    Performs sentiment analysis, theme extraction, management commentary
-    analysis, and strategic insights extraction from quarterly reports
-    and earnings call transcripts.
-    """
-
     def __init__(self, settings: Optional[Settings] = None):
         """Initialize the qualitative analyzer tool"""
         self.settings = settings or Settings()

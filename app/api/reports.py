@@ -1,10 +1,3 @@
-# File: app/api/reports.py
-# Purpose: Reports and analytics API endpoints
-# Dependencies: fastapi, pydantic, typing
-# Author: AI Assistant
-# Date: 2025-09-18
-# Phase: 5
-
 import asyncio
 import logging
 from datetime import datetime, timedelta
@@ -73,31 +66,28 @@ async def get_analytics_dashboard(
     request counts, success rates, response times, and error patterns.
     """
     try:
-        # Return mock data for testing
+        # Return actual empty analytics (no data yet)
         return AnalyticsResponse(
-            total_requests=1542,
-            successful_requests=1480,
-            failed_requests=62,
-            success_rate=96.0,
-            average_response_time=0.245,
+            total_requests=0,
+            successful_requests=0,
+            failed_requests=0,
+            success_rate=0.0,
+            average_response_time=0.0,
             requests_by_endpoint={
-                "/api/v1/analysis/comprehensive": 450,
-                "/api/v1/analysis/quick": 623,
-                "/api/v1/intelligence/market-intelligence": 469
+                "/api/v1/analysis/comprehensive": 0,
+                "/api/v1/analysis/quick": 0,
+                "/api/v1/intelligence/market-intelligence": 0
             },
             requests_by_day={
-                "Monday": 220,
-                "Tuesday": 215,
-                "Wednesday": 218,
-                "Thursday": 221,
-                "Friday": 223,
-                "Saturday": 222,
-                "Sunday": 223
+                "Monday": 0,
+                "Tuesday": 0,
+                "Wednesday": 0,
+                "Thursday": 0,
+                "Friday": 0,
+                "Saturday": 0,
+                "Sunday": 0
             },
-            top_error_types={
-                "ValidationError": 45,
-                "TimeoutError": 17
-            }
+            top_error_types={}
         )
 
         # Original code (commented for mock)

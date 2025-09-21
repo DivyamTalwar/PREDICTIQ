@@ -26,14 +26,15 @@ class DatabaseManager:
                 logger.info("Using in-memory SQLite for testing/development")
                 database_url = "sqlite:///./tcs_financial.db"
             else:
-                # Use PyMySQL driver for better compatibility
+
+                from urllib.parse import quote_plus
+                encoded_password = quote_plus(settings.mysql_password)
                 database_url = (
-                    f"mysql+pymysql://{settings.mysql_user}:{settings.mysql_password}"
+                    f"mysql+pymysql://{settings.mysql_user}:{encoded_password}"
                     f"@{settings.mysql_host}:{settings.mysql_port}/{settings.mysql_database}"
                     f"?charset=utf8mb4"
                 )
 
-            # Engine configuration with connection pooling
             engine_config = {
                 "poolclass": QueuePool,
                 "pool_size": 20,  # Number of connections to maintain
